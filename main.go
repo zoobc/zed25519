@@ -68,4 +68,9 @@ func main() {
 		testSign(false)
 		testSign(true)
 	}
+
+	var s = SecretFromSeed([]byte("asdf"))
+	var y [32]byte
+	var proof [96]byte
+	y, proof = s.VrfEval([]byte("aaaa"))
 }
