@@ -1,3 +1,6 @@
+# testing/development code
+playground.go
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
