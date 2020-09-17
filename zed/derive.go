@@ -36,7 +36,7 @@ func (pk *Public) Derive(selector []byte) *Public {
 	h[31] |= 64
 
 	// A' = h * A
-	ScalarMultPointVartime(&npk.point, &h, &pk.point) // WARNING: VARTIME USED ON SECRET DATA
+	ScalarMultPointVartime(&npk.point, &h, &pk.point)
 	return npk
 }
 

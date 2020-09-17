@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 
-	"./zed"
+	"github.com/zoobc/zed25519/zed"
 )
 
 func rng(n int) []byte {
