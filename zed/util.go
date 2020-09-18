@@ -179,7 +179,7 @@ func PointEqual(a, b *ExtendedGroupElement) bool {
 	return bytes.Equal(aBytes[:], bBytes[:])
 }
 
-// PointCopy duplicates the data of the input Point into a new Point objectl
+// PointCopy duplicates the data of the input Point into a new Point object.
 func PointCopy(r, p *Point) {
 	FeCopy(&r.X, &p.X)
 	FeCopy(&r.Y, &p.Y)
