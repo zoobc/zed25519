@@ -61,7 +61,36 @@ Now Bob, holding only Alice's *Public*, wants to verify that Alice produced the 
 
 ## Key Derivation
 
-*Coming soon...*
+In asymmetric cryptography, *Key Derivation* refers to deriving *child* keypairs from a *parent* keypair in a deterministic way. This can be used to manage many keys from a single master seed. The key derivation strategy implemented in ***zed*** involves generating a large integer called a *blinding factor* (or just a *blind*), which is multiplied by both the Secret (scalar) and the Public (Ed25519 curve point) to obtain a new (Secret, Public) keypair.
+
+Lets start by assuming you have a *master* keypair generated from some 32-byte seed:
+
+    var masterSecret = zed.SecretFromSeed(masterSeed)
+    var masterPublic = masterSecret.Public()
+
+***zed*** supports two types of key derivation for Ed25519 keypairs, called *public* and *secret* derivation. In *public* derivation, the blind is a function of the *public* key, along with a byte string called the *index*. Because the blind is computed from public information, a child Public can be derived from a parent Public, without knowing the parent Secret:
+
+    var child1Public = masterPublic.Derive([]byte("child1"))
+
+Only the owner of *masterSecret* can compute the corresponding child Secret:
+
+    var child1Secret = masterPrivate.Derive([]byte("child1"), nil)
+
+We can check that the derivation is correct by comparing *child1Public* (which was derived knowing only *masterPublic*) to the Public we get from *child1Secret* (which was derived from *masterSecret*):
+
+    var pk1 = child1Public.Key()
+    var pk2 = child1Secret.Public().Key()
+    fmt.Println(bytes.Equal(pk1[:], pk2[:]))
+    // > true
+
+In *secret* derivation, the blind is a function of only *secret* information, along with the *index* string. Furthermore, secret derivation may use an extra byte string called the *skey*, to create a unique set of secret derived key indexes.
+
+Because it requires secret information, it is not possible to perform secret derivation from a Public. it can only be done from a Secret, from which the corresponding Public can be generated subsequently:
+
+    child2Secret = masterSecret.Derive([]byte("child2"), []byte("skey-ABCD"))
+    child2Public = child2Secret.Public()
+
+
 
 
 ## Key Exchange
