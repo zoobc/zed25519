@@ -209,7 +209,7 @@ func PointCopy(r, p *Point) {
 //      if ( p = decompress( ob[ 0:32] ) ) break
 //      if ( p = decompress( ob[32:64] ) ) break
 //      ib[0]++
-//    return P * 8
+//    return P
 //
 //  Intuition: initialize a 64-byte "In Buffer" (ib) with the hash of the input (x). Then set
 //  the first byte of ib to 0, and consider it a counter. Then run a loop, where at each iteration
@@ -218,8 +218,7 @@ func PointCopy(r, p *Point) {
 //  otherwise increment the counter ib[0] and try again. Each attempt has ~50% chance of success,
 //  so getting through all 512 attempts (256 values of ib[0] with 2 attempts each) without finding
 //  a valid point has probability ~2^-512, which is harder than finding a hash collision (should
-//  never happen in practice.) After we find a valid point, multiply it by the cofactor (8) to
-//  ensure that it falls in the same subgroup as the base point, then return to caller.
+//  never happen in practice.) After we find a valid point, return to caller.
 //
 func HashToPointVartime(r *Point, x []byte) {
 	var h = sha512.New()
@@ -244,5 +243,4 @@ func HashToPointVartime(r *Point, x []byte) {
 		}
 		ib[0]++
 	}
-	PointClearCofactor(r, &p)
 }

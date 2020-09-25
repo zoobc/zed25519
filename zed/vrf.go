@@ -128,10 +128,18 @@ func (sk *Secret) VrfEval(x []byte) (VrfResult, VrfProof) {
 	var s Scalar
 	ScalarMultScalarAddScalar(&s, &h, &a, &r)
 
-	// y = sha512(Vs)[:32]
+	// cV = cofactor * V
+	var cV Point
+	PointClearCofactor(&cV, &V)
+
+	// cVs = compress(cV)
+	var cVs Buffer256
+	CompressPoint(&cVs, &cV)
+
+	// y = sha512(cVs)[:32]
 	var y VrfResult
 	hash.Reset()
-	hash.Write(Vs[:])
+	hash.Write(cVs[:])
 	hash.Sum(res[:0])
 	copy(y[:], res[:32])
 
@@ -270,10 +278,14 @@ func (pk *Public) VrfVerify(x, proof []byte) (VrfResult, bool) {
 		return zeros, false
 	}
 
-	// y = sha512(Vs)[:32]
+	// cVs = compress(cV)
+	var cVs Buffer256
+	CompressPoint(&cVs, &cV)
+
+	// y = sha512(cVs)[:32]
 	var y VrfResult
 	hash.Reset()
-	hash.Write(Vs[:])
+	hash.Write(cVs[:])
 	hash.Sum(res[:0])
 	copy(y[:], res[:32])
 
